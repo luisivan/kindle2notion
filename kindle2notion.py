@@ -49,7 +49,7 @@ class KindleClippings(object):
                 pageOrAndLoc, *optLocAndDate = secondLine.strip().split('|')
 
                 addedOn = optLocAndDate[-1]
-                dateAdded = datetime.strptime(addedOn, ' Added on %A, %d %B %Y %X')
+                dateAdded = datetime.strptime(addedOn, ' Added on %A, %B %d, %Y %X %p')
                 clipping = eachClipping[3]
 
                 lastClip = {
@@ -132,22 +132,13 @@ class KindleClippings(object):
             if lastClip['Clipping'].strip() == eachClip.title:
                     clipExists = True
         if clipExists == False:
+            title = ""
             if lastClip['Location'] != None:
-                if lastClip['Page'] != None:
-                    parentPage.children.add_new(
-                        TextBlock,
-                        title = "Page: " + lastClip['Page'] + "\tLocation: " + lastClip['Location'] + "\tDate Added: " +  str(lastClip['Date Added'].strftime("%A, %d %B %Y %I:%M:%S %p"))
-                    )
-                else:
-                    parentPage.children.add_new(
-                        TextBlock,
-                        title = "Location: " + lastClip['Location'] + "\tDate Added: " +  str(lastClip['Date Added'].strftime("%A, %d %B %Y %I:%M:%S %p"))
-                    )
-            else:
-                parentPage.children.add_new(
-                    TextBlock,
-                    title = "Page: " + lastClip['Page'] + "\tDate Added: " +  str(lastClip['Date Added'].strftime("%A, %d %B %Y %I:%M:%S %p"))
-                )
+                title += "Location: " + lastClip['Location'] + " "
+            if lastClip['Page'] != None:
+                title += "Page: " + lastClip['Page'] + " "
+            title += "\tDate Added: " +  str(lastClip['Date Added'].strftime("%A, %d %B %Y %I:%M:%S %p"))
+            parentPage.children.add_new(TextBlock, title = title)
             parentPage.children.add_new(
                 QuoteBlock,
                 title = lastClip['Clipping']
