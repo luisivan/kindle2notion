@@ -128,6 +128,7 @@ class KindleClippings(object):
             row.title = lastClip['Title']
             row.author = lastClip['Author']
             row.highlights = 0
+        print(row.last_synced)
         parentPage = client.get_block(row.id)
         allClippings = parentPage.children.filter(QuoteBlock)
         for eachClip in allClippings:
