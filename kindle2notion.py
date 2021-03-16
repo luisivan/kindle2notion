@@ -110,42 +110,6 @@ class KindleClippings(object):
     
     def _lenClippings(self):
         return len(self.clippings)
-    
-    def addNewClippingToRow(self, lastClip, row, titleExists):
-        clipExists = False
-        if not titleExists:
-            row.title = lastClip['Title']
-            row.author = lastClip['Author']
-            row.highlights = 0        
-        parentPage = client.get_block(row.id)
-        allClippings = parentPage.children.filter(QuoteBlock)
-        for eachClip in allClippings:
-            if lastClip['Clipping'].strip() == eachClip.title:
-                    clipExists = True
-        if clipExists == False:
-            if lastClip['Location'] != None:
-                if lastClip['Page'] != None:
-                    parentPage.children.add_new(
-                        TextBlock,
-                        title = "Page: " + lastClip['Page'] + "\tLocation: " + lastClip['Location'] + "\tDate Added: " +  str(lastClip['Date Added'].strftime("%A, %d %B %Y %I:%M:%S %p"))
-                    )
-                else:
-                    parentPage.children.add_new(
-                        TextBlock,
-                        title = "Location: " + lastClip['Location'] + "\tDate Added: " +  str(lastClip['Date Added'].strftime("%A, %d %B %Y %I:%M:%S %p"))
-                    )
-            else:
-                parentPage.children.add_new(
-                    TextBlock,
-                    title = "Page: " + lastClip['Page'] + "\tDate Added: " +  str(lastClip['Date Added'].strftime("%A, %d %B %Y %I:%M:%S %p"))
-                )
-            parentPage.children.add_new(
-                QuoteBlock,
-                title = lastClip['Clipping']
-            )
-            row.highlights +=1
-            row.last_highlighted = NotionDate(lastClip['Date Added'])
-            row.last_synced = NotionDate(datetime.now())
 
     def addToNotion(self, lastClip):
         titleExists = False
