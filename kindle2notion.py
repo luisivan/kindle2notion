@@ -6,6 +6,7 @@ from datetime import datetime
 import string
 import os
 import unicodedata
+import asyncio
 from settings import CLIPPINGS_FILE, NOTION_TOKEN, NOTION_TABLE_ID
 
 class KindleClippings(object):
@@ -53,12 +54,12 @@ class KindleClippings(object):
                 clipping = eachClipping[3]
 
                 lastClip = {
-                        'Title': title,
-                        'Author': ",".join(author),
-                        'Page': None,
-                        'Location': None,
-                        'Date Added': dateAdded,
-                        'Clipping': clipping
+                    'Title': title,
+                    'Author': ",".join(author),
+                    'Page': None,
+                    'Location': None,
+                    'Date Added': dateAdded,
+                    'Clipping': clipping
                 }
             
                 # TODO: This conditions also can be reduced. New logic can check "Your X at/on location/page" and change it dynamically
@@ -94,6 +95,7 @@ class KindleClippings(object):
                 
                 clipCollection.append(lastClip)
                 self.addToNotion(lastClip)
+                print('run')
                 counter += 1
 
             else:
@@ -115,7 +117,7 @@ class KindleClippings(object):
         titleExists = False
         clipExists = False
         global cv
-        allRows = cv.collection.get_rows()
+        global allRows
         if allRows != []:
             for eachRow in allRows:
                 if lastClip['Title'] == eachRow.title:
@@ -130,15 +132,15 @@ class KindleClippings(object):
         allClippings = parentPage.children.filter(QuoteBlock)
         for eachClip in allClippings:
             if lastClip['Clipping'].strip() == eachClip.title:
-                    clipExists = True
+                clipExists = True
         if clipExists == False:
             title = ""
             if lastClip['Location'] != None:
                 title += "Location: " + lastClip['Location'] + " "
             if lastClip['Page'] != None:
                 title += "Page: " + lastClip['Page'] + " "
-            title += "\tDate Added: " +  str(lastClip['Date Added'].strftime("%A, %d %B %Y %I:%M:%S %p"))
-            parentPage.children.add_new(TextBlock, title = title)
+            # title += "\tDate Added: " +  str(lastClip['Date Added'].strftime("%A, %d %B %Y %I:%M:%S %p"))
+            # parentPage.children.add_new(TextBlock, title = title)
             parentPage.children.add_new(
                 QuoteBlock,
                 title = lastClip['Clipping']
@@ -150,6 +152,5 @@ class KindleClippings(object):
 client = NotionClient(token_v2= NOTION_TOKEN)
 cv = client.get_collection_view(NOTION_TABLE_ID)
 allRows = cv.collection.get_rows()
-print(cv.parent.views)
 
 ch = KindleClippings(CLIPPINGS_FILE)
